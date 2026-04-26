@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>THE MOON — Boutique Céleste</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --noir: #04040c;
+      --profond: #08081a;
+      --or: #c9a84c;
+      --or-clair: #e8c97a;
+      --argent: #a8b5c8;
+      --blanc: #f0ece4;
+      --creme: #d6cebc;
+      --font-titre: 'Cinzel', serif;
+      --font-corps: 'Cormorant Garamond', serif;
+      --font-ui: 'Lato', sans-serif;
+      --transition: 0.4s cubic-bezier(0.25,0.8,0.25,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--noir);
+      color: var(--blanc);
+      font-family: var(--font-corps);
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
+    ul { list-style: none; }
+
+    #etoiles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .etoile {
+      position: absolute; border-radius: 50%; background: white;
+      animation: scintiller var(--d,3s) ease-in-out infinite alternate;
+    }
+    @keyframes scintiller { from { opacity:0.05; } to { opacity:0.75; } }
+
+    body::before {
+      content:''; position:fixed; inset:0; z-index:1; pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:200;
+      padding: 1.2rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(4,4,12,0.97) 0%, rgba(4,4,12,0) 100%);
+      transition: var(--transition);
+    }
+    nav.fixee {
+      background: rgba(4,4,12,0.97);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.5);
+    }
+    .logo {
+      font-family: var(--font-titre); font-weight: 900;
+      font-size: 1.3rem; letter-spacing: 0.45em;
+      color: var(--or); text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .nav-liens { display: flex; gap: 2.5rem; }
+    .nav-liens a {
+      font-family: var(--font-ui); font-size: 0.7rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--creme); position: relative; padding-bottom: 4px;
+      transition: color var(--transition);
+    }
+    .nav-liens a::after {
+      content:''; position:absolute; bottom:0; left:0;
+      width:0; height:1px; background:var(--or);
+      transition: width var(--transition);
+    }
+    .nav-liens a:hover, .nav-liens a.active { color: var(--or); }
+    .nav-liens a:hover::after, .nav-liens a.active::after { width:100%; }
+    .nav-actions { display:flex; align-items:center; gap:1.5rem; }
+    .panier-btn {
+      position:relative; font-size:1.3rem;
+      color:var(--creme); transition:color var(--transition); cursor: pointer;
+    }
+    .panier-btn:hover { color:var(--or); }
+    .panier-compteur {
+      position:absolute; top:-8px; right:-8px;
+      background:var(--or); color:var(--noir);
+      font-family:var(--font-ui); font-size:0.58rem; font-weight:700;
+      width:17px; height:17px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .menu-burger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+    .menu-burger span { display:block; width:24px; height:1px; background:var(--creme); transition:var(--transition); }
+
+    .page { display:none; min-height:100vh; position:relative; z-index:2; padding-top:80px; }
+    .page.active { display:block; animation: apparaitre 0.55s ease; }
+    @keyframes apparaitre {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .btn-or {
+      display:inline-block; font-family:var(--font-ui); font-size:0.7rem;
+      letter-spacing:0.25em; text-transform:uppercase; font-weight:700;
+      padding:1rem 2.5rem; background:var(--or); color:var(--noir);
+      position:relative; overflow:hidden; transition:var(--transition); cursor:pointer;
+    }
+    .btn-or::before {
+      content:''; position:absolute; inset:0; background:var(--or-clair);
+      transform:translateX(-100%); transition:transform 0.4s ease;
+    }
+    .btn-or:hover::before { transform:translateX(0); }
+    .btn-or span { position:relative; z-index:1; }
+    .btn-contour {
+      display:inline-block; font-family:var(--font-ui); font-size:0.7rem;
+      letter-spacing:0.25em; text-transform:uppercase;
+      padding:1rem 2.5rem; border:1px solid rgba(201,168,76,0.5); color:var(--or);
+      transition:var(--transition); cursor:pointer;
+    }
+    .btn-contour:hover { background:rgba(201,168,76,0.08); border-color:var(--or); }
+
+    .titre-section { text-align:center; margin-bottom:4rem; }
+    .titre-section .etiquette {
+      font-family:var(--font-ui); font-size:0.62rem;
+      letter-spacing:0.5em; text-transform:uppercase;
+      color:var(--or); display:block; margin-bottom:1rem;
+    }
+    .titre-section h2 {
+      font-family:var(--font-titre); font-size:clamp(2rem,5vw,3.5rem);
+      font-weight:400; letter-spacing:0.05em; color:var(--blanc); text-transform:uppercase;
+    }
+    .titre-section .trait { width:60px; height:1px; background:var(--or); margin:1.5rem auto 0; opacity:0.6; }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      text-align:center; position:relative; overflow:hidden; padding:6rem 2rem 4rem;
+    }
+    .hero-lune-visuelle {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-55%);
+      width:min(650px,90vw); height:min(650px,90vw); border-radius:50%;
+      background:radial-gradient(circle at 33% 33%, #f0e4a0, #c9a84c 28%, #6a4e10 58%, #110d04 82%, transparent);
+      box-shadow: 0 0 100px 40px rgba(201,168,76,0.12), 0 0 300px 120px rgba(201,168,76,0.04);
+      animation: flotterLune 9s ease-in-out infinite; opacity:0.2;
+    }
+    @keyframes flotterLune {
+      0%,100% { transform:translate(-50%,-55%) scale(1); }
+      50%      { transform:translate(-50%,-58%) scale(1.03); }
+    }
+    .hero-contenu { position:relative; z-index:2; max-width:850px; }
+    .hero-accroche {
+      font-family:var(--font-ui); font-size:0.68rem; letter-spacing:0.55em;
+      text-transform:uppercase; color:var(--or); margin-bottom:1.5rem;
+      animation:monter 1s ease 0.2s both;
+    }
+    .hero-titre {
+      font-family:var(--font-titre); font-size:clamp(4rem,12vw,9rem);
+      font-weight:900; line-height:0.88; color:var(--blanc); letter-spacing:0.06em;
+      text-transform:uppercase; margin-bottom:0.3em; animation:monter 1s ease 0.4s both;
+    }
+    .hero-titre .or { color:var(--or); display:block; }
+    .hero-sous-titre {
+      font-family:var(--font-corps); font-size:clamp(1rem,2vw,1.35rem);
+      font-style:italic; color:var(--argent); margin-bottom:3rem;
+      animation:monter 1s ease 0.6s both;
+    }
+    .hero-boutons {
+      display:flex; gap:1.2rem; justify-content:center; flex-wrap:wrap;
+      animation:monter 1s ease 0.8s both;
+    }
+    @keyframes monter {
+      from { opacity:0; transform:translateY(32px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .indicateur-scroll {
+      position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
+      display:flex; flex-direction:column; align-items:center; gap:0.5rem;
+      font-family:var(--font-ui); font-size:0.6rem; letter-spacing:0.3em;
+      color:var(--argent); text-transform:uppercase; animation:rebondir 2.5s ease infinite;
+    }
+    .indicateur-scroll::after { content:''; width:1px; height:40px; background:linear-gradient(to bottom, var(--or), transparent); }
+    @keyframes rebondir {
+      0%,100% { transform:translateX(-50%) translateY(0); }
+      50%      { transform:translateX(-50%) translateY(-8px); }
+    }
+
+    /* ===== CATEGORIES ===== */
+    .categories { padding:6rem 3rem; }
+    .grille-cat { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; max-width:1200px; margin:0 auto; }
+    .carte-cat { position:relative; height:360px; overflow:hidden; cursor:pointer; transition:var(--transition); }
+    .carte-cat:first-child { grid-row:span 2; height:auto; min-height:736px; }
+    .carte-cat-fond { position:absolute; inset:0; transition:transform 0.7s ease; }
+    .carte-cat:hover .carte-cat-fond { transform:scale(1.07); }
+    .fond1 { background:radial-gradient(ellipse at 40% 30%, #251b06 0%, #0a0814 100%); }
+    .fond2 { background:radial-gradient(ellipse at 60% 60%, #0c1a28 0%, #040810 100%); }
+    .fond3 { background:radial-gradient(ellipse at 30% 70%, #1a0a26 0%, #04040e 100%); }
+    .fond4 { background:radial-gradient(ellipse at 70% 40%, #0a1a0a 0%, #04080a 100%); }
+    .carte-cat-fond svg { width:100%; height:100%; position:absolute; inset:0; }
+    .carte-cat-infos {
+      position:absolute; bottom:0; left:0; right:0; padding:2rem;
+      background:linear-gradient(to top, rgba(4,4,12,0.92) 0%, transparent 100%);
+    }
+    .carte-cat-label {
+      font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.4em;
+      text-transform:uppercase; color:var(--or); margin-bottom:0.4rem;
+    }
+    .carte-cat-nom {
+      font-family:var(--font-titre); font-size:1.6rem; font-weight:600;
+      color:var(--blanc); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.8rem;
+    }
+    .carte-cat-lien {
+      font-family:var(--font-ui); font-size:0.65rem; letter-spacing:0.3em;
+      text-transform:uppercase; color:var(--or-clair);
+      display:flex; align-items:center; gap:0.5rem; transition:gap var(--transition);
+    }
+    .carte-cat:hover .carte-cat-lien { gap:1rem; }
+
+    /* ===== BANNIÈRE PROMO ===== */
+    .banniere-promo {
+      background:linear-gradient(135deg, var(--or) 0%, #8a5c10 100%);
+      padding:4rem 3rem; text-align:center; position:relative; overflow:hidden;
+    }
+    .banniere-promo::before {
+      content:'☽'; position:absolute; font-size:15rem;
+      color:rgba(255,255,255,0.04); top:-2rem; left:-1rem; font-family:serif;
+    }
+    .banniere-promo h3 {
+      font-family:var(--font-titre); font-size:clamp(1.5rem,4vw,2.5rem);
+      font-weight:900; color:var(--noir); letter-spacing:0.08em;
+      text-transform:uppercase; margin-bottom:0.5rem;
+    }
+    .banniere-promo p {
+      font-family:var(--font-corps); font-style:italic;
+      color:rgba(4,4,12,0.75); font-size:1.1rem; margin-bottom:1.8rem;
+    }
+    .banniere-promo .btn-noir {
+      display:inline-block; font-family:var(--font-ui); font-size:0.7rem;
+      letter-spacing:0.25em; text-transform:uppercase; font-weight:700;
+      padding:0.9rem 2.2rem; background:var(--noir); color:var(--or);
+      transition:var(--transition); cursor:pointer;
+    }
+    .banniere-promo .btn-noir:hover { background:#1a1a2e; }
+
+    /* ===== TÉMOIGNAGES ===== */
+    .temoignages { padding:6rem 3rem; background:rgba(255,255,255,0.01); }
+    .grille-temoignages { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; max-width:1100px; margin:0 auto; }
+    .carte-temoignage {
+      padding:2.5rem; border:1px solid rgba(201,168,76,0.12);
+      background:rgba(255,255,255,0.02); transition:var(--transition);
+    }
+    .carte-temoignage:hover { border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.04); }
+    .etoiles-avis { color:var(--or); font-size:0.85rem; margin-bottom:1rem; }
+    .texte-avis { font-family:var(--font-corps); font-style:italic; font-size:1.05rem; color:var(--creme); margin-bottom:1.5rem; line-height:1.8; }
+    .auteur-avis { font-family:var(--font-ui); font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--or); }
+
+    /* ===== NEWSLETTER ===== */
+    .newsletter {
+      padding:6rem 3rem; text-align:center;
+      background:radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 70%);
+    }
+    .newsletter h2 {
+      font-family:var(--font-titre); font-size:clamp(1.8rem,4vw,2.8rem);
+      font-weight:400; letter-spacing:0.08em; text-transform:uppercase; color:var(--blanc); margin-bottom:1rem;
+    }
+    .newsletter p { font-family:var(--font-corps); font-style:italic; color:var(--argent); margin-bottom:2.5rem; font-size:1.1rem; }
+    .form-newsletter { display:flex; max-width:480px; margin:0 auto; }
+    .form-newsletter input {
+      flex:1; padding:1rem 1.5rem; background:rgba(255,255,255,0.05);
+      border:1px solid rgba(201,168,76,0.3); border-right:none;
+      color:var(--blanc); font-family:var(--font-corps); font-size:1rem;
+      outline:none; transition:border-color var(--transition);
+    }
+    .form-newsletter input:focus { border-color:var(--or); }
+    .form-newsletter input::placeholder { color:var(--argent); font-style:italic; }
+    .form-newsletter button {
+      padding:1rem 2rem; background:var(--or); color:var(--noir);
+      font-family:var(--font-ui); font-size:0.68rem; letter-spacing:0.2em;
+      text-transform:uppercase; font-weight:700; transition:var(--transition); cursor:pointer;
+    }
+    .form-newsletter button:hover { background:var(--or-clair); }
+
+    /* ===== BOUTIQUE ===== */
+    .boutique-entete { padding:5rem 3rem 3rem; text-align:center; border-bottom:1px solid rgba(201,168,76,0.1); }
+    .boutique-filtres {
+      padding:2rem 3rem; display:flex; align-items:center; justify-content:space-between;
+      max-width:1200px; margin:0 auto; flex-wrap:wrap; gap:1rem;
+    }
+    .filtres-groupe { display:flex; gap:1rem; flex-wrap:wrap; }
+    .filtre-btn {
+      font-family:var(--font-ui); font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase;
+      padding:0.5rem 1.3rem; border:1px solid rgba(201,168,76,0.25); color:var(--argent);
+      transition:var(--transition); cursor:pointer;
+    }
+    .filtre-btn:hover, .filtre-btn.actif { border-color:var(--or); color:var(--or); background:rgba(201,168,76,0.06); }
+    .trier-select {
+      font-family:var(--font-ui); font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase;
+      padding:0.5rem 1rem; background:transparent; border:1px solid rgba(201,168,76,0.25);
+      color:var(--argent); outline:none; cursor:pointer;
+    }
+    .trier-select option { background:var(--profond); }
+    .grille-produits {
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+      gap:2rem; padding:3rem; max-width:1300px; margin:0 auto;
+    }
+    .carte-produit { position:relative; cursor:pointer; transition:var(--transition); }
+    .carte-produit:hover { transform:translateY(-6px); }
+    .produit-image {
+      position:relative; height:340px; overflow:hidden;
+      background:linear-gradient(145deg, var(--profond), var(--noir)); margin-bottom:1.2rem;
+    }
+    .produit-visuel { width:100%; height:100%; display:flex; align-items:center; justify-content:center; transition:transform 0.7s ease; }
+    .carte-produit:hover .produit-visuel { transform:scale(1.06); }
+    .produit-badge {
+      position:absolute; top:1rem; left:1rem; z-index:2;
+      font-family:var(--font-ui); font-size:0.58rem; letter-spacing:0.2em;
+      text-transform:uppercase; font-weight:700; padding:0.3rem 0.8rem;
+    }
+    .badge-nouveau { background:var(--or); color:var(--noir); }
+    .badge-promo   { background:#c94c4c; color:white; }
+    .produit-actions {
+      position:absolute; bottom:1rem; right:1rem; left:1rem; z-index:2;
+      display:flex; gap:0.5rem; opacity:0; transform:translateY(8px); transition:var(--transition);
+    }
+    .carte-produit:hover .produit-actions { opacity:1; transform:translateY(0); }
+    .action-panier {
+      flex:1; padding:0.7rem; background:var(--or); color:var(--noir);
+      font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.2em;
+      text-transform:uppercase; font-weight:700; text-align:center; transition:var(--transition); cursor:pointer;
+    }
+    .action-panier:hover { background:var(--or-clair); }
+    .action-favori {
+      padding:0.7rem 1rem; background:rgba(4,4,12,0.8);
+      border:1px solid rgba(201,168,76,0.4); color:var(--or); font-size:1.1rem;
+      transition:var(--transition); cursor:pointer;
+    }
+    .produit-infos { padding:0 0.2rem; }
+    .produit-categorie { font-family:var(--font-ui); font-size:0.58rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--or); margin-bottom:0.3rem; }
+    .produit-nom { font-family:var(--font-titre); font-size:1.05rem; font-weight:600; color:var(--blanc); letter-spacing:0.03em; margin-bottom:0.5rem; }
+    .produit-prix { font-family:var(--font-corps); font-size:1.15rem; color:var(--or-clair); }
+    .produit-prix .prix-barre { text-decoration:line-through; color:var(--argent); font-size:0.9rem; margin-right:0.5rem; }
+
+    /* ===== À PROPOS ===== */
+    .apropos-hero {
+      height:50vh; display:flex; align-items:center; justify-content:center;
+      text-align:center; background:radial-gradient(ellipse at center, rgba(201,168,76,0.08) 0%, transparent 70%);
+    }
+    .apropos-hero h1 { font-family:var(--font-titre); font-size:clamp(2.5rem,7vw,5.5rem); font-weight:900; letter-spacing:0.1em; text-transform:uppercase; color:var(--blanc); }
+    .apropos-hero h1 span { color:var(--or); }
+    .apropos-grille { display:grid; grid-template-columns:1fr 1fr; gap:5rem; padding:6rem 5rem; max-width:1200px; margin:0 auto; align-items:center; }
+    .apropos-texte h2 { font-family:var(--font-titre); font-size:clamp(1.8rem,3vw,2.8rem); font-weight:400; letter-spacing:0.05em; text-transform:uppercase; color:var(--blanc); margin-bottom:1.5rem; }
+    .apropos-texte h2 em { color:var(--or); font-style:normal; }
+    .apropos-texte p { font-family:var(--font-corps); font-size:1.1rem; color:var(--argent); line-height:1.9; margin-bottom:1.3rem; }
+    .trait-or { width:50px; height:2px; background:var(--or); margin-bottom:2rem; }
+    .apropos-visuel { position:relative; height:500px; display:flex; align-items:center; justify-content:center; }
+    .lune-apropos {
+      width:350px; height:350px; border-radius:50%;
+      background:radial-gradient(circle at 35% 35%, #f0e4a0, #c9a84c 25%, #7a5e1a 55%, #1a1208 80%);
+      box-shadow:0 0 60px 20px rgba(201,168,76,0.15), 0 0 150px 60px rgba(201,168,76,0.05);
+      animation:flotterLune 8s ease-in-out infinite;
+    }
+    .valeurs { padding:5rem 3rem; background:rgba(255,255,255,0.01); }
+    .grille-valeurs { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; max-width:1100px; margin:3rem auto 0; }
+    .carte-valeur { text-align:center; padding:3rem 2rem; border:1px solid rgba(201,168,76,0.1); transition:var(--transition); }
+    .carte-valeur:hover { border-color:rgba(201,168,76,0.3); background:rgba(201,168,76,0.03); }
+    .valeur-icone { font-size:2.5rem; margin-bottom:1.2rem; }
+    .valeur-titre { font-family:var(--font-titre); font-size:1.1rem; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--blanc); margin-bottom:0.8rem; }
+    .valeur-texte { font-family:var(--font-corps); font-style:italic; font-size:1rem; color:var(--argent); line-height:1.8; }
+    .chiffres { padding:5rem 3rem; text-align:center; }
+    .grille-chiffres { display:grid; grid-template-columns:repeat(4,1fr); gap:2rem; max-width:1000px; margin:3rem auto 0; }
+    .chiffre-valeur { font-family:var(--font-titre); font-size:3.5rem; font-weight:900; color:var(--or); letter-spacing:0.05em; display:block; }
+    .chiffre-label { font-family:var(--font-ui); font-size:0.65rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--argent); }
+
+    /* ===== CONTACT ===== */
+    .contact-entete { padding:5rem 3rem 3rem; text-align:center; border-bottom:1px solid rgba(201,168,76,0.1); }
+    .contact-grille { display:grid; grid-template-columns:1fr 1.5fr; gap:5rem; padding:5rem; max-width:1200px; margin:0 auto; }
+    .contact-infos h3 { font-family:var(--font-titre); font-size:1.5rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--blanc); margin-bottom:2rem; }
+    .info-item { display:flex; gap:1rem; margin-bottom:2rem; align-items:flex-start; }
+    .info-icone { font-size:1.3rem; color:var(--or); margin-top:0.1rem; }
+    .info-texte-label { font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--or); margin-bottom:0.3rem; }
+    .info-texte-val { font-family:var(--font-corps); font-size:1.05rem; color:var(--creme); }
+    .horaires { padding:2rem; border:1px solid rgba(201,168,76,0.15); background:rgba(255,255,255,0.02); margin-top:2.5rem; }
+    .horaires h4 { font-family:var(--font-titre); font-size:0.85rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--or); margin-bottom:1.2rem; }
+    .horaire-ligne { display:flex; justify-content:space-between; font-family:var(--font-corps); font-size:1rem; color:var(--creme); padding:0.4rem 0; border-bottom:1px solid rgba(201,168,76,0.07); }
+    .horaire-ligne:last-child { border-bottom:none; }
+    .champ-groupe { margin-bottom:1.5rem; }
+    .champ-groupe label { display:block; font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.25em; text-transform:uppercase; color:var(--or); margin-bottom:0.5rem; }
+    .champ-groupe input, .champ-groupe textarea, .champ-groupe select {
+      width:100%; padding:0.9rem 1.2rem; background:rgba(255,255,255,0.04);
+      border:1px solid rgba(201,168,76,0.2); color:var(--blanc);
+      font-family:var(--font-corps); font-size:1rem; outline:none; transition:border-color var(--transition);
+    }
+    .champ-groupe input:focus, .champ-groupe textarea:focus, .champ-groupe select:focus { border-color:var(--or); }
+    .champ-groupe input::placeholder, .champ-groupe textarea::placeholder { color:var(--argent); font-style:italic; }
+    .champ-groupe textarea { resize:vertical; min-height:140px; }
+    .champ-groupe select option { background:var(--profond); }
+    .champ-double { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .msg-succes { display:none; padding:1rem 1.5rem; background:rgba(201,168,76,0.1); border:1px solid var(--or); color:var(--or); font-family:var(--font-corps); font-style:italic; margin-top:1rem; }
+
+    /* ===== PANIER ===== */
+    .panier-entete { padding:5rem 3rem 3rem; text-align:center; border-bottom:1px solid rgba(201,168,76,0.1); }
+    .panier-contenu { display:grid; grid-template-columns:1.6fr 1fr; gap:3rem; padding:4rem 5rem; max-width:1200px; margin:0 auto; }
+    .panier-articles h3 { font-family:var(--font-titre); font-size:1rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--blanc); margin-bottom:2rem; padding-bottom:1rem; border-bottom:1px solid rgba(201,168,76,0.1); }
+    .article-panier { display:flex; gap:1.5rem; padding:1.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); align-items:center; }
+    .article-image { width:90px; height:90px; flex-shrink:0; background:rgba(255,255,255,0.04); display:flex; align-items:center; justify-content:center; font-size:2.5rem; }
+    .article-details { flex:1; }
+    .article-nom { font-family:var(--font-titre); font-size:0.95rem; font-weight:600; color:var(--blanc); margin-bottom:0.3rem; }
+    .article-sous { font-family:var(--font-corps); font-style:italic; font-size:0.9rem; color:var(--argent); margin-bottom:0.6rem; }
+    .article-prix { font-family:var(--font-corps); font-size:1.1rem; color:var(--or-clair); }
+    .qte-controle { display:flex; align-items:center; border:1px solid rgba(201,168,76,0.2); }
+    .qte-btn { width:34px; height:34px; background:transparent; color:var(--or); font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:var(--transition); cursor:pointer; }
+    .qte-btn:hover { background:rgba(201,168,76,0.1); }
+    .qte-val { width:40px; text-align:center; font-family:var(--font-ui); font-size:0.85rem; color:var(--blanc); background:rgba(255,255,255,0.04); border-left:1px solid rgba(201,168,76,0.15); border-right:1px solid rgba(201,168,76,0.15); padding:0.5rem 0; }
+    .supprimer-btn { color:rgba(201,168,76,0.4); font-size:1.1rem; transition:color var(--transition); cursor:pointer; padding:0.3rem; }
+    .supprimer-btn:hover { color:#c94c4c; }
+    .panier-vide { text-align:center; padding:5rem 0; }
+    .panier-vide-icone { font-size:4rem; margin-bottom:1.5rem; opacity:0.4; }
+    .panier-vide p { font-family:var(--font-corps); font-style:italic; color:var(--argent); font-size:1.2rem; margin-bottom:2rem; }
+    .resume-commande { position:sticky; top:100px; padding:2.5rem; border:1px solid rgba(201,168,76,0.15); background:rgba(255,255,255,0.02); height:fit-content; }
+    .resume-titre { font-family:var(--font-titre); font-size:1rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--blanc); margin-bottom:2rem; padding-bottom:1rem; border-bottom:1px solid rgba(201,168,76,0.1); }
+    .resume-ligne { display:flex; justify-content:space-between; font-family:var(--font-corps); font-size:1.05rem; color:var(--creme); margin-bottom:0.9rem; }
+    .resume-ligne.total { font-size:1.3rem; color:var(--or-clair); font-weight:600; border-top:1px solid rgba(201,168,76,0.15); padding-top:1rem; margin-top:0.5rem; }
+    .code-promo { display:flex; margin:1.5rem 0; }
+    .code-promo input { flex:1; padding:0.7rem 1rem; background:rgba(255,255,255,0.04); border:1px solid rgba(201,168,76,0.2); border-right:none; color:var(--blanc); font-family:var(--font-corps); font-size:0.95rem; outline:none; }
+    .code-promo button { padding:0.7rem 1.2rem; background:rgba(201,168,76,0.15); color:var(--or); font-family:var(--font-ui); font-size:0.6rem; letter-spacing:0.2em; text-transform:uppercase; border:1px solid rgba(201,168,76,0.3); cursor:pointer; transition:var(--transition); }
+    .code-promo button:hover { background:rgba(201,168,76,0.25); }
+    .securite-info { display:flex; align-items:center; gap:0.5rem; margin-top:1.5rem; font-family:var(--font-ui); font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--argent); }
+
+    /* ===== FOOTER ===== */
+    footer { background:var(--profond); border-top:1px solid rgba(201,168,76,0.1); padding:5rem 3rem 2rem; position:relative; z-index:2; }
+    .footer-grille { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; max-width:1200px; margin:0 auto 4rem; }
+    .footer-logo { font-family:var(--font-titre); font-weight:900; font-size:1.3rem; letter-spacing:0.45em; color:var(--or); text-transform:uppercase; margin-bottom:1.2rem; }
+    .footer-desc { font-family:var(--font-corps); font-style:italic; font-size:1rem; color:var(--argent); line-height:1.8; margin-bottom:1.5rem; }
+    .footer-social { display:flex; gap:1rem; }
+    .social-btn { width:38px; height:38px; border:1px solid rgba(201,168,76,0.2); display:flex; align-items:center; justify-content:center; color:var(--argent); font-size:0.9rem; transition:var(--transition); cursor:pointer; }
+    .social-btn:hover { border-color:var(--or); color:var(--or); }
+    .footer-col h4 { font-family:var(--font-titre); font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--or); margin-bottom:1.5rem; }
+    .footer-col ul { display:flex; flex-direction:column; gap:0.7rem; }
+    .footer-col ul li a { font-family:var(--font-corps); font-size:1rem; color:var(--argent); transition:color var(--transition); }
+    .footer-col ul li a:hover { color:var(--blanc); }
+    .footer-bas { border-top:1px solid rgba(201,168,76,0.08); padding-top:2rem; max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+    .footer-bas p { font-family:var(--font-ui); font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--argent); }
+    .footer-bas span { color:var(--or); }
+
+    /* ===== TOAST ===== */
+    .toast { position:fixed; bottom:2rem; right:2rem; z-index:500; background:var(--or); color:var(--noir); font-family:var(--font-ui); font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; font-weight:700; padding:1rem 2rem; transform:translateY(100px); opacity:0; transition:all 0.4s ease; }
+    .toast.visible { transform:translateY(0); opacity:1; }
+
+    /* ===== MODAL ===== */
+    .modal-overlay { position:fixed; inset:0; z-index:400; background:rgba(4,4,12,0.92); display:flex; align-items:center; justify-content:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity 0.4s ease; }
+    .modal-overlay.ouvert { opacity:1; pointer-events:all; }
+    .modal-contenu { background:var(--profond); border:1px solid rgba(201,168,76,0.2); max-width:900px; width:100%; display:grid; grid-template-columns:1fr 1fr; transform:translateY(20px); transition:transform 0.4s ease; }
+    .modal-overlay.ouvert .modal-contenu { transform:translateY(0); }
+    .modal-image { height:450px; background:var(--noir); display:flex; align-items:center; justify-content:center; }
+    .modal-infos { padding:3rem; }
+    .modal-categorie { font-family:var(--font-ui); font-size:0.6rem; letter-spacing:0.35em; text-transform:uppercase; color:var(--or); margin-bottom:0.5rem; }
+    .modal-nom { font-family:var(--font-titre); font-size:1.8rem; font-weight:600; color:var(--blanc); letter-spacing:0.03em; margin-bottom:0.8rem; }
+    .modal-prix { font-family:var(--font-corps); font-size:1.5rem; color:var(--or-clair); margin-bottom:1.5rem; }
+    .modal-desc { font-family:var(--font-corps); font-style:italic; font-size:1rem; color:var(--argent); line-height:1.8; margin-bottom:2rem; }
+    .modal-fermer { position:absolute; top:1rem; right:1rem; font-size:1.5rem; color:var(--argent); cursor:pointer; transition:color var(--transition); }
+    .modal-fermer:hover { color:var(--or); }
+
+    /* ===== RESPONSIVE ===== */
+    @media(max-width:900px) {
+      nav { padding:1rem 1.5rem; }
+      .nav-liens { display:none; }
+      .menu-burger { display:flex; }
+      .grille-cat { grid-template-columns:1fr 1fr; }
+      .carte-cat:first-child { grid-column:span 2; }
+      .apropos-grille { grid-template-columns:1fr; gap:3rem; }
+      .lune-apropos { width:250px; height:250px; }
+      .grille-valeurs { grid-template-columns:1fr; }
+      .grille-chiffres { grid-template-columns:repeat(2,1fr); }
+      .contact-grille { grid-template-columns:1fr; padding:3rem 2rem; }
+      .panier-contenu { grid-template-columns:1fr; padding:3rem 2rem; }
+      .footer-grille { grid-template-columns:1fr 1fr; }
+      .grille-temoignages { grid-template-columns:1fr; }
+      .modal-contenu { grid-template-columns:1fr; }
+      .modal-image { height:250px; }
+      .champ-double { grid-template-columns:1fr; }
+    }
+    @media(max-width:600px) {
+      .hero-titre { font-size:clamp(3rem,15vw,4.5rem); }
+      .grille-cat { grid-template-columns:1fr; }
+      .carte-cat:first-child { grid-column:span 1; }
+      nav { padding:1rem; }
+      .boutique-filtres { flex-direction:column; align-items:flex-start; }
+      .grille-produits { grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); padding:2rem 1.5rem; }
+      footer { padding:3rem 1.5rem 1.5rem; }
+      .footer-grille { grid-template-columns:1fr; }
+      .categories, .temoignages, .newsletter, .valeurs, .chiffres { padding:4rem 1.5rem; }
+      .apropos-grille { padding:3rem 1.5rem; }
+    }
+
+    /* ===== MENU MOBILE ===== */
+    .nav-mobile { position:fixed; inset:0; z-index:150; background:rgba(4,4,12,0.98); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2.5rem; transform:translateX(100%); transition:transform 0.4s ease; }
+    .nav-mobile.ouvert { transform:translateX(0); }
+    .nav-mobile a { font-family:var(--font-titre); font-size:2rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--blanc); transition:color var(--transition); }
+    .nav-mobile a:hover { color:var(--or); }
+    .fermer-menu { position:absolute; top:1.5rem; right:1.5rem; font-size:1.5rem; color:var(--argent); cursor:pointer; transition:color var(--transition); }
+    .fermer-menu:hover { color:var(--or); }
+  </style>
+</head>
+<body>
+
+<!-- ÉTOILES -->
+<div id="etoiles"></div>
+
+<!-- NAVIGATION -->
+<nav id="nav">
+  <div class="logo">☽ THE MOON</div>
+  <ul class="nav-liens">
+    <li><a href="#" class="active" onclick="afficherPage('accueil',this)">Accueil</a></li>
+    <li><a href="#" onclick="afficherPage('boutique',this)">Boutique</a></li>
+    <li><a href="#" onclick="afficherPage('apropos',this)">À Propos</a></li>
+    <li><a href="#" onclick="afficherPage('contact',this)">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div class="panier-btn" onclick="afficherPage('panier')">
+      🛒 <span class="panier-compteur" id="compteurPanier">0</span>
+    </div>
+    <div class="menu-burger" onclick="toggleMenuMobile()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- MENU MOBILE -->
+<div class="nav-mobile" id="navMobile">
+  <span class="fermer-menu" onclick="toggleMenuMobile()">✕</span>
+  <a href="#" onclick="afficherPage('accueil');toggleMenuMobile()">Accueil</a>
+  <a href="#" onclick="afficherPage('boutique');toggleMenuMobile()">Boutique</a>
+  <a href="#" onclick="afficherPage('apropos');toggleMenuMobile()">À Propos</a>
+  <a href="#" onclick="afficherPage('contact');toggleMenuMobile()">Contact</a>
+  <a href="#" onclick="afficherPage('panier');toggleMenuMobile()">Panier</a>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL PRODUIT -->
+<div class="modal-overlay" id="modal" onclick="fermerModal(event)">
+  <div class="modal-contenu" style="position:relative">
+    <span class="modal-fermer" onclick="fermerModal()">✕</span>
+    <div class="modal-image" id="modalImage"></div>
+    <div class="modal-infos">
+      <div class="modal-categorie" id="modalCategorie"></div>
+      <div class="modal-nom" id="modalNom"></div>
+      <div class="modal-prix" id="modalPrix"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <button class="btn-or" onclick="ajouterPanierModal()"><span>Ajouter au Panier</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE ACCUEIL ========== -->
+<div class="page active" id="page-accueil">
+  <section class="hero">
+    <div class="hero-lune-visuelle"></div>
+    <div class="hero-contenu">
+      <p class="hero-accroche">✦ Boutique Céleste & Luxe Mystique ✦</p>
+      <h1 class="hero-titre">THE <span class="or">MOON</span></h1>
+      <p class="hero-sous-titre">« Portez la lumière de la lune, révélez votre lumière intérieure »</p>
+      <div class="hero-boutons">
+        <button class="btn-or" onclick="afficherPage('boutique')"><span>Découvrir la Collection</span></button>
+        <button class="btn-contour" onclick="afficherPage('apropos')">Notre Histoire</button>
+      </div>
+    </div>
+    <div class="indicateur-scroll">Défiler</div>
+  </section>
+
+  <section class="categories">
+    <div class="titre-section">
+      <span class="etiquette">✦ Nos Univers ✦</span>
+      <h2>Collections Exclusives</h2>
+      <div class="trait"></div>
+    </div>
+    <div class="grille-cat">
+      <div class="carte-cat" onclick="afficherPage('boutique')">
+        <div class="carte-cat-fond fond1">
+          <svg viewBox="0 0 400 800" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="g1" cx="40%" cy="35%">
+                <stop offset="0%" stop-color="#f0e4a0" stop-opacity="0.7"/>
+                <stop offset="40%" stop-color="#c9a84c" stop-opacity="0.5"/>
+                <stop offset="100%" stop-color="#0a0814" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="180" cy="280" r="160" fill="url(#g1)"/>
+            <circle cx="180" cy="280" r="160" fill="none" stroke="#c9a84c" stroke-width="1" stroke-opacity="0.3"/>
+            <circle cx="140" cy="230" r="18" fill="#8a6020" opacity="0.4"/>
+            <circle cx="200" cy="310" r="12" fill="#7a5010" opacity="0.35"/>
+            <circle cx="165" cy="300" r="8"  fill="#6a4010" opacity="0.3"/>
+            <circle cx="60"  cy="60"  r="1.5" fill="white" opacity="0.6"/>
+            <circle cx="320" cy="100" r="1"   fill="white" opacity="0.5"/>
+            <circle cx="350" cy="400" r="1"   fill="white" opacity="0.6"/>
+            <ellipse cx="180" cy="280" rx="200" ry="50" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-opacity="0.2" stroke-dasharray="10 6"/>
+          </svg>
+        </div>
+        <div class="carte-cat-infos">
+          <div class="carte-cat-label">Collection Phare</div>
+          <div class="carte-cat-nom">Éclats Lunaires</div>
+          <div class="carte-cat-lien">Découvrir →</div>
+        </div>
+      </div>
+      <div class="carte-cat" onclick="afficherPage('boutique')">
+        <div class="carte-cat-fond fond2">
+          <svg viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+            <rect x="120" y="60" width="160" height="240" rx="2" fill="none" stroke="#a8b5c8" stroke-opacity="0.3" stroke-width="1.5"/>
+            <text x="200" y="175" text-anchor="middle" font-family="serif" font-size="48" fill="#a8b5c8" opacity="0.5">✦</text>
+            <circle cx="300" cy="90" r="2" fill="white" opacity="0.5"/>
+            <circle cx="80" cy="200" r="1.5" fill="white" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="carte-cat-infos">
+          <div class="carte-cat-label">Nouvelle Saison</div>
+          <div class="carte-cat-nom">Parfums Célestes</div>
+          <div class="carte-cat-lien">Explorer →</div>
+        </div>
+      </div>
+      <div class="carte-cat" onclick="afficherPage('boutique')">
+        <div class="carte-cat-fond fond3">
+          <svg viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="200" cy="180" r="80" fill="none" stroke="#9b59b6" stroke-opacity="0.3" stroke-width="1.5"/>
+            <path d="M 200 100 L 230 160 L 280 165 L 240 205 L 255 260 L 200 225 L 145 260 L 160 205 L 120 165 L 170 160 Z" fill="#9b59b6" opacity="0.15" stroke="#9b59b6" stroke-opacity="0.3" stroke-width="1"/>
+            <circle cx="70" cy="70" r="1.5" fill="white" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="carte-cat-infos">
+          <div class="carte-cat-label">Édition Limitée</div>
+          <div class="carte-cat-nom">Bijoux Mystiques</div>
+          <div class="carte-cat-lien">Voir →</div>
+        </div>
+      </div>
+      <div class="carte-cat" onclick="afficherPage('boutique')">
+        <div class="carte-cat-fond fond4">
+          <svg viewBox="0 0 400 360" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 200 80 Q 280 120 280 180 Q 280 240 200 280 Q 120 240 120 180 Q 120 120 200 80" fill="none" stroke="#2ecc71" stroke-opacity="0.3" stroke-width="1.5"/>
+            <text x="200" y="190" text-anchor="middle" font-family="serif" font-size="36" fill="#2ecc71" opacity="0.4">♦</text>
+            <circle cx="100" cy="100" r="1.5" fill="white" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="carte-cat-infos">
+          <div class="carte-cat-label">Soin & Bien-être</div>
+          <div class="carte-cat-nom">Rituels Lunaires</div>
+          <div class="carte-cat-lien">Découvrir →</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="banniere-promo">
+    <h3>✦ Livraison Offerte ✦</h3>
+    <p>Pour toute commande supérieure à 80€ — France métropolitaine</p>
+    <button class="btn-noir" onclick="afficherPage('boutique')">Profiter de l'Offre</button>
+  </section>
+
+  <section class="temoignages">
+    <div class="titre-section">
+      <span class="etiquette">✦ Ce Qu'Ils Disent ✦</span>
+      <h2>Avis de Nos Clientes</h2>
+      <div class="trait"></div>
+    </div>
+    <div class="grille-temoignages">
+      <div class="carte-temoignage">
+        <div class="etoiles-avis">★★★★★</div>
+        <p class="texte-avis">« Une expérience de shopping absolument envoûtante. Les parfums sont d'une finesse rare, et l'emballage est un vrai bijou. »</p>
+        <div class="auteur-avis">— Isabelle M., Paris</div>
+      </div>
+      <div class="carte-temoignage">
+        <div class="etoiles-avis">★★★★★</div>
+        <p class="texte-avis">« Je cherchais un cadeau original pour ma meilleure amie. The Moon m'a offert exactement ce dont j'avais besoin — du luxe, du mystère. »</p>
+        <div class="auteur-avis">— Camille R., Lyon</div>
+      </div>
+      <div class="carte-temoignage">
+        <div class="etoiles-avis">★★★★★</div>
+        <p class="texte-avis">« Mes bijoux lunaires ont reçu tellement de compliments ! La qualité est exceptionnelle et le service client est attentionné. »</p>
+        <div class="auteur-avis">— Nora B., Bordeaux</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="newsletter">
+    <h2>Rejoignez le Cercle Lunaire</h2>
+    <p>Recevez nos nouvelles collections, rituels exclusifs et offres réservées aux initiées</p>
+    <div class="form-newsletter">
+      <input type="email" placeholder="Votre adresse e-mail..." id="emailNewsletter"/>
+      <button onclick="inscrireNewsletter()">S'inscrire</button>
+    </div>
+  </section>
+</div>
+
+<!-- ========== PAGE BOUTIQUE ========== -->
+<div class="page" id="page-boutique">
+  <div class="boutique-entete">
+    <div class="titre-section" style="margin-bottom:0">
+      <span class="etiquette">✦ Notre Univers ✦</span>
+      <h2>La Boutique</h2>
+      <div class="trait"></div>
+    </div>
+  </div>
+  <div class="boutique-filtres">
+    <div class="filtres-groupe">
+      <button class="filtre-btn actif" onclick="filtrerProduits('tous',this)">Tous</button>
+      <button class="filtre-btn" onclick="filtrerProduits('parfums',this)">Parfums</button>
+      <button class="filtre-btn" onclick="filtrerProduits('bijoux',this)">Bijoux</button>
+      <button class="filtre-btn" onclick="filtrerProduits('rituels',this)">Rituels</button>
+      <button class="filtre-btn" onclick="filtrerProduits('bougies',this)">Bougies</button>
+    </div>
+    <select class="trier-select" onchange="trierProduits(this.value)">
+      <option value="">Trier par</option>
+      <option value="prix-asc">Prix croissant</option>
+      <option value="prix-desc">Prix décroissant</option>
+      <option value="nouveau">Nouveautés</option>
+    </select>
+  </div>
+  <div class="grille-produits" id="grilleProduits"></div>
+</div>
+
+<!-- ========== PAGE À PROPOS ========== -->
+<div class="page" id="page-apropos">
+  <div class="apropos-hero">
+    <h1>Notre <span>Histoire</span></h1>
+  </div>
+  <div class="apropos-grille">
+    <div class="apropos-texte">
+      <div class="trait-or"></div>
+      <h2>Née sous la <em>Lumière</em> de la Lune</h2>
+      <p>The Moon est née d'une passion profonde pour le mystère, la beauté et les cycles de la nature. En 2019, notre fondatrice Léa Marchand a créé cette boutique avec un rêve simple : offrir aux femmes des objets qui les connectent à leur lumière intérieure.</p>
+      <p>Chaque produit que nous sélectionnons est pensé comme un rituel. Des parfums qui évoquent la nuit étoilée, des bijoux inspirés des phases lunaires, des bougies qui transforment votre espace en sanctuaire.</p>
+      <p>Nous croyons que la beauté est un acte spirituel. Que se choisir un parfum, porter un bijou ou allumer une bougie, c'est honorer qui l'on est.</p>
+      <button class="btn-or" style="margin-top:1rem" onclick="afficherPage('boutique')"><span>Découvrir nos Produits</span></button>
+    </div>
+    <div class="apropos-visuel">
+      <div class="lune-apropos"></div>
+    </div>
+  </div>
+  <section class="valeurs">
+    <div class="titre-section">
+      <span class="etiquette">✦ Ce En Quoi Nous Croyons ✦</span>
+      <h2>Nos Valeurs</h2>
+      <div class="trait"></div>
+    </div>
+    <div class="grille-valeurs">
+      <div class="carte-valeur">
+        <div class="valeur-icone">🌿</div>
+        <div class="valeur-titre">Éco-Responsable</div>
+        <div class="valeur-texte">Nos emballages sont 100 % recyclables. Nous privilégions les fournisseurs locaux et les matières premières naturelles.</div>
+      </div>
+      <div class="carte-valeur">
+        <div class="valeur-icone">✦</div>
+        <div class="valeur-titre">Artisanal & Rare</div>
+        <div class="valeur-texte">Chaque création est fabriquée en petite série par des artisans passionnés. Des pièces uniques pour des âmes singulières.</div>
+      </div>
+      <div class="carte-valeur">
+        <div class="valeur-icone">🌙</div>
+        <div class="valeur-titre">Rituel Quotidien</div>
+        <div class="valeur-texte">Nous concevons chaque produit pour transformer vos gestes du quotidien en moments de grâce et de magie.</div>
+      </div>
+    </div>
+  </section>
+  <section class="chiffres">
+    <div class="titre-section">
+      <span class="etiquette">✦ The Moon en Chiffres ✦</span>
+      <h2>Notre Parcours</h2>
+      <div class="trait"></div>
+    </div>
+    <div class="grille-chiffres">
+      <div class="chiffre-item"><span class="chiffre-valeur">5+</span><span class="chiffre-label">Années d'existence</span></div>
+      <div class="chiffre-item"><span class="chiffre-valeur">12K</span><span class="chiffre-label">Clientes fidèles</span></div>
+      <div class="chiffre-item"><span class="chiffre-valeur">85+</span><span class="chiffre-label">Produits uniques</span></div>
+      <div class="chiffre-item"><span class="chiffre-valeur">98%</span><span class="chiffre-label">Satisfaction client</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- ========== PAGE CONTACT ========== -->
+<div class="page" id="page-contact">
+  <div class="contact-entete">
+    <div class="titre-section" style="margin-bottom:0">
+      <span class="etiquette">✦ Nous Écrire ✦</span>
+      <h2>Contact</h2>
+      <div class="trait"></div>
+    </div>
+  </div>
+  <div class="contact-grille">
+    <div class="contact-infos">
+      <h3>Restons en Contact</h3>
+      <div class="info-item">
+        <div class="info-icone">📍</div>
+        <div>
+          <div class="info-texte-label">Adresse</div>
+          <div class="info-texte-val">12, Rue de la Lune<br>75004 Paris, France</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icone">✉️</div>
+        <div>
+          <div class="info-texte-label">E-mail</div>
+          <div class="info-texte-val">bonjour@themoon.fr</div>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icone">📞</div>
+        <div>
+          <div class="info-texte-label">Téléphone</div>
+          <div class="info-texte-val">+33 1 42 00 00 00</div>
+        </div>
+      </div>
+      <div class="horaires">
+        <h4>🌙 Horaires d'ouverture</h4>
+        <div class="horaire-ligne"><span>Lundi – Vendredi</span><span>10h – 19h</span></div>
+        <div class="horaire-ligne"><span>Samedi</span><span>11h – 18h</span></div>
+        <div class="horaire-ligne"><span>Dimanche</span><span>Fermé</span></div>
+      </div>
+    </div>
+    <div class="formulaire-contact">
+      <h3 style="font-family:var(--font-titre);font-size:1.1rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--blanc);margin-bottom:2rem;">Envoyez-nous un Message</h3>
+      <div class="champ-double">
+        <div class="champ-groupe">
+          <label>Prénom</label>
+          <input type="text" placeholder="Votre prénom" id="cPrenom"/>
+        </div>
+        <div class="champ-groupe">
+          <label>Nom</label>
+          <input type="text" placeholder="Votre nom" id="cNom"/>
+        </div>
+      </div>
+      <div class="champ-groupe">
+        <label>E-mail</label>
+        <input type="email" placeholder="votre@email.fr" id="cEmail"/>
+      </div>
+      <div class="champ-groupe">
+        <label>Sujet</label>
+        <select id="cSujet">
+          <option value="">Choisir un sujet...</option>
+          <option>Question sur une commande</option>
+          <option>Retour / Échange</option>
+          <option>Information produit</option>
+          <option>Partenariat</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div class="champ-groupe">
+        <label>Message</label>
+        <textarea placeholder="Écrivez votre message ici..." id="cMessage"></textarea>
+      </div>
+      <button class="btn-or" onclick="envoyerFormulaire()"><span>✦ Envoyer le Message</span></button>
+      <div class="msg-succes" id="msgSucces">✦ Merci ! Votre message a bien été envoyé. Nous vous répondrons dans les 24 heures.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE PANIER ========== -->
+<div class="page" id="page-panier">
+  <div class="panier-entete">
+    <div class="titre-section" style="margin-bottom:0">
+      <span class="etiquette">✦ Mes Achats ✦</span>
+      <h2>Mon Panier</h2>
+      <div class="trait"></div>
+    </div>
+  </div>
+  <div class="panier-contenu">
+    <div class="panier-articles">
+      <h3>Articles Sélectionnés</h3>
+      <div id="listePanier"></div>
+    </div>
+    <div class="resume-commande">
+      <div class="resume-titre">Résumé de la Commande</div>
+      <div class="resume-ligne"><span>Sous-total</span><span id="sousTotal">0,00 €</span></div>
+      <div class="resume-ligne"><span>Livraison</span><span id="livraison">Gratuite</span></div>
+      <div class="resume-ligne"><span>TVA (20%)</span><span id="tva">0,00 €</span></div>
+      <div class="resume-ligne total"><span>Total TTC</span><span id="totalFinal">0,00 €</span></div>
+      <div class="code-promo">
+        <input type="text" placeholder="Code promo..." id="codePromo"/>
+        <button onclick="appliquerCode()">Appliquer</button>
+      </div>
+      <button class="btn-or" style="width:100%;text-align:center;margin-top:0.5rem" onclick="commander()"><span>✦ Commander</span></button>
+      <div class="securite-info">🔒 Paiement 100% sécurisé</div>
+      <div style="text-align:center;margin-top:1.5rem">
+        <button class="btn-contour" onclick="afficherPage('boutique')" style="font-size:0.62rem;padding:0.7rem 1.5rem">← Continuer les achats</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="footer-grille">
+    <div>
+      <div class="footer-logo">☽ THE MOON</div>
+      <p class="footer-desc">Boutique de luxe mystique dédiée aux femmes qui célèbrent leur lumière intérieure. Des créations rares pour des âmes singulières.</p>
+      <div class="footer-social">
+        <div class="social-btn">◉</div>
+        <div class="social-btn">✦</div>
+        <div class="social-btn">▷</div>
+        <div class="social-btn">◈</div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>La Boutique</h4>
+      <ul>
+        <li><a href="#" onclick="afficherPage('boutique')">Tous les produits</a></li>
+        <li><a href="#" onclick="afficherPage('boutique')">Parfums</a></li>
+        <li><a href="#" onclick="afficherPage('boutique')">Bijoux</a></li>
+        <li><a href="#" onclick="afficherPage('boutique')">Rituels</a></li>
+        <li><a href="#" onclick="afficherPage('boutique')">Bougies</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Informations</h4>
+      <ul>
+        <li><a href="#" onclick="afficherPage('apropos')">À propos</a></li>
+        <li><a href="#" onclick="afficherPage('contact')">Contact</a></li>
+        <li><a href="#">Livraison & Retours</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Mentions légales</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Aide</h4>
+      <ul>
+        <li><a href="#">Suivre ma commande</a></li>
+        <li><a href="#">Programme fidélité</a></li>
+        <li><a href="#">Cartes cadeaux</a></li>
+        <li><a href="#">Guide des tailles</a></li>
+        <li><a href="#">Blog Lunaire</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bas">
+    <p>© 2024 <span>The Moon</span> — Tous droits réservés</p>
+    <p>Conçu avec <span>☽</span> à Paris, France</p>
+  </div>
+</footer>
+
+<script>
+// ========== DONNÉES PRODUITS ==========
+const produits = [
+  { id:1,  nom:"Eau de Lune",           categorie:"parfums", prix:89,  ancien:null, badge:"nouveau", emoji:"🌙", desc:"Un parfum envoûtant aux notes de jasmin nocturne, bois de santal et musc blanc. Inspiré des nuits claires de pleine lune." },
+  { id:2,  nom:"Collier Phasé",         categorie:"bijoux",  prix:145, ancien:190,  badge:"promo",   emoji:"💎", desc:"Collier en argent sterling 925 représentant les huit phases de la lune. Chaque perle façonnée à la main par nos artisans." },
+  { id:3,  nom:"Bougie Rituel Nuit",    categorie:"bougies", prix:38,  ancien:null, badge:"nouveau", emoji:"🕯️", desc:"Bougie artisanale en cire de soja parfumée à la rose noire et au patchouli. 45 heures de combustion." },
+  { id:4,  nom:"Huile Sacrée Lunaire",  categorie:"rituels", prix:62,  ancien:null, badge:null,      emoji:"✨", desc:"Mélange d'huiles essentielles de néroli, de bergamote et de vétiver. Pour vos rituels de nouvelle ou pleine lune." },
+  { id:5,  nom:"Sérum Éclat Céleste",   categorie:"rituels", prix:95,  ancien:120,  badge:"promo",   emoji:"🌟", desc:"Sérum visage luxueux enrichi en extrait de perle et poudre d'or. Illumine le teint et révèle la radiance naturelle." },
+  { id:6,  nom:"Bague Croissant",       categorie:"bijoux",  prix:78,  ancien:null, badge:null,      emoji:"🌙", desc:"Bague en vermeil rose représentant un croissant de lune. Taille ajustable. Chaque pièce est unique." },
+  { id:7,  nom:"Nuit Étoilée",          categorie:"parfums", prix:110, ancien:null, badge:null,      emoji:"⭐", desc:"Parfum de niche aux notes de violette, d'iris et d'ambre gris. Flacon rechargeable en verre soufflé." },
+  { id:8,  nom:"Kit Pleine Lune",       categorie:"rituels", prix:155, ancien:200,  badge:"promo",   emoji:"🔮", desc:"Coffret complet : bougie blanche, cristal de sélénite, carnet de gratitude, encens lunaire et guide illustré." },
+  { id:9,  nom:"Diffuseur Mystère",     categorie:"bougies", prix:48,  ancien:null, badge:"nouveau", emoji:"🌿", desc:"Diffuseur en céramique noire mate avec 6 bâtonnets et 100ml de parfum d'ambiance Nuit Veloutée." },
+  { id:10, nom:"Bracelet Constellation",categorie:"bijoux",  prix:65,  ancien:null, badge:null,      emoji:"✦",  desc:"Bracelet délicat en or blanc parsemé de diamants en constellation. Personnalisable avec votre signe astrologique." },
+  { id:11, nom:"Crème Lune Pleine",     categorie:"rituels", prix:72,  ancien:null, badge:null,      emoji:"💫", desc:"Crème corps onctueuse à la rose de Damas et au lait d'ânesse. Texture veloutée qui nourrit intensément la peau." },
+  { id:12, nom:"Minuit Enchanté",       categorie:"parfums", prix:125, ancien:150,  badge:"promo",   emoji:"🌌", desc:"Eau de parfum orientale aux notes de cannelle, d'oud et de vanille bourbon. Le parfum des grandes occasions." },
+];
+
+let panier = [];
+let produitActif = null;
+let filtreCourant = 'tous';
+
+// ========== NAVIGATION ==========
+function afficherPage(pageId, lienEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  document.querySelectorAll('.nav-liens a').forEach(a => a.classList.remove('active'));
+  if (lienEl) lienEl.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (pageId === 'boutique') rendreProduits(filtreCourant);
+  if (pageId === 'panier') rendrePanier();
+}
+
+// ========== ÉTOILES ==========
+function creerEtoiles() {
+  const conteneur = document.getElementById('etoiles');
+  for (let i = 0; i < 200; i++) {
+    const e = document.createElement('div');
+    e.classList.add('etoile');
+    const taille = Math.random() * 2.5 + 0.5;
+    e.style.cssText = `width:${taille}px;height:${taille}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;animation-delay:${(Math.random()*5).toFixed(1)}s;`;
+    conteneur.appendChild(e);
+  }
+}
+
+// ========== SCROLL NAV ==========
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('fixee', window.scrollY > 50);
+});
+
+// ========== MENU MOBILE ==========
+function toggleMenuMobile() {
+  document.getElementById('navMobile').classList.toggle('ouvert');
+}
+
+// ========== TOAST ==========
+function afficherToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 3000);
+}
+
+// ========== PRODUITS ==========
+function rendreProduits(filtre) {
+  const grille = document.getElementById('grilleProduits');
+  const liste = filtre === 'tous' ? produits : produits.filter(p => p.categorie === filtre);
+  grille.innerHTML = liste.map(p => `
+    <div class="carte-produit" data-cat="${p.categorie}">
+      <div class="produit-image">
+        ${p.badge ? `<div class="produit-badge badge-${p.badge === 'nouveau' ? 'nouveau' : 'promo'}">${p.badge === 'nouveau' ? 'Nouveau' : 'Promo'}</div>` : ''}
+        <div class="produit-visuel" style="font-size:5rem">${p.emoji}</div>
+        <div class="produit-actions">
+          <div class="action-panier" onclick="ajouterAuPanier(${p.id});event.stopPropagation()">Ajouter au Panier</div>
+          <div class="action-favori" onclick="event.stopPropagation()">♡</div>
+        </div>
+      </div>
+      <div class="produit-infos" onclick="ouvrirModal(${p.id})">
+        <div class="produit-categorie">${capitaliser(p.categorie)}</div>
+        <div class="produit-nom">${p.nom}</div>
+        <div class="produit-prix">
+          ${p.ancien ? `<span class="prix-barre">${p.ancien},00 €</span>` : ''}
+          ${p.prix},00 €
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filtrerProduits(cat, btn) {
+  filtreCourant = cat;
+  document.querySelectorAll('.filtre-btn').forEach(b => b.classList.remove('actif'));
+  btn.classList.add('actif');
+  rendreProduits(cat);
+}
+
+function trierProduits(valeur) {
+  const liste = filtreCourant === 'tous' ? [...produits] : produits.filter(p => p.categorie === filtreCourant);
+  if (valeur === 'prix-asc')  liste.sort((a,b) => a.prix - b.prix);
+  if (valeur === 'prix-desc') liste.sort((a,b) => b.prix - a.prix);
+  if (valeur === 'nouveau')   liste.sort((a,b) => (b.badge==='nouveau'?1:0) - (a.badge==='nouveau'?1:0));
+  const grille = document.getElementById('grilleProduits');
+  grille.innerHTML = liste.map(p => `
+    <div class="carte-produit">
+      <div class="produit-image">
+        ${p.badge ? `<div class="produit-badge badge-${p.badge === 'nouveau' ? 'nouveau' : 'promo'}">${p.badge === 'nouveau' ? 'Nouveau' : 'Promo'}</div>` : ''}
+        <div class="produit-visuel" style="font-size:5rem">${p.emoji}</div>
+        <div class="produit-actions">
+          <div class="action-panier" onclick="ajouterAuPanier(${p.id});event.stopPropagation()">Ajouter au Panier</div>
+          <div class="action-favori" onclick="event.stopPropagation()">♡</div>
+        </div>
+      </div>
+      <div class="produit-infos" onclick="ouvrirModal(${p.id})">
+        <div class="produit-categorie">${capitaliser(p.categorie)}</div>
+        <div class="produit-nom">${p.nom}</div>
+        <div class="produit-prix">
+          ${p.ancien ? `<span class="prix-barre">${p.ancien},00 €</span>` : ''}
+          ${p.prix},00 €
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function capitaliser(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// ========== MODAL ==========
+function ouvrirModal(id) {
+  const p = produits.find(x => x.id === id);
+  if (!p) return;
+  produitActif = p;
+  document.getElementById('modalImage').textContent = p.emoji;
+  document.getElementById('modalImage').style.fontSize = '7rem';
+  document.getElementById('modalCategorie').textContent = capitaliser(p.categorie);
+  document.getElementById('modalNom').textContent = p.nom;
+  document.getElementById('modalPrix').textContent = p.prix + ',00 €';
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modal').classList.add('ouvert');
+}
+function fermerModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('ouvert');
+    produitActif = null;
+  }
+}
+function ajouterPanierModal() {
+  if (produitActif) { ajouterAuPanier(produitActif.id); fermerModal(); }
+}
+
+// ========== PANIER ==========
+function ajouterAuPanier(id) {
+  const p = produits.find(x => x.id === id);
+  if (!p) return;
+  const existant = panier.find(x => x.id === id);
+  if (existant) { existant.qte++; }
+  else { panier.push({ ...p, qte: 1 }); }
+  mettreAJourCompteur();
+  afficherToast('✦ ' + p.nom + ' ajouté au panier');
+}
+function mettreAJourCompteur() {
+  document.getElementById('compteurPanier').textContent = panier.reduce((s,x) => s + x.qte, 0);
+}
+function rendrePanier() {
+  const liste = document.getElementById('listePanier');
+  if (panier.length === 0) {
+    liste.innerHTML = `<div class="panier-vide"><div class="panier-vide-icone">🛒</div><p>Votre panier est vide pour l'instant.</p><button class="btn-or" onclick="afficherPage('boutique')"><span>Découvrir nos Produits</span></button></div>`;
+    mettreAJourResume(); return;
+  }
+  liste.innerHTML = panier.map(p => `
+    <div class="article-panier">
+      <div class="article-image">${p.emoji}</div>
+      <div class="article-details">
+        <div class="article-nom">${p.nom}</div>
+        <div class="article-sous">${capitaliser(p.categorie)}</div>
+        <div class="article-prix">${p.prix},00 €</div>
+      </div>
+      <div class="qte-controle">
+        <button class="qte-btn" onclick="changerQte(${p.id},-1)">−</button>
+        <span class="qte-val">${p.qte}</span>
+        <button class="qte-btn" onclick="changerQte(${p.id},1)">+</button>
+      </div>
+      <button class="supprimer-btn" onclick="supprimerArticle(${p.id})">✕</button>
+    </div>
+  `).join('');
+  mettreAJourResume();
+}
+function changerQte(id, delta) {
+  const item = panier.find(x => x.id === id);
+  if (!item) return;
+  item.qte += delta;
+  if (item.qte <= 0) supprimerArticle(id);
+  else { mettreAJourCompteur(); rendrePanier(); }
+}
+function supprimerArticle(id) {
+  panier = panier.filter(x => x.id !== id);
+  mettreAJourCompteur(); rendrePanier();
+}
+function mettreAJourResume() {
+  const sous  = panier.reduce((s,x) => s + x.prix * x.qte, 0);
+  const tva   = sous * 0.2;
+  const livr  = sous >= 80 || sous === 0 ? 'Gratuite' : '4,90 €';
+  const total = sous + tva + (livr === 'Gratuite' ? 0 : 4.90);
+  document.getElementById('sousTotal').textContent  = sous.toFixed(2).replace('.',',') + ' €';
+  document.getElementById('livraison').textContent  = livr;
+  document.getElementById('tva').textContent        = tva.toFixed(2).replace('.',',') + ' €';
+  document.getElementById('totalFinal').textContent = total.toFixed(2).replace('.',',') + ' €';
+}
+function appliquerCode() {
+  const code = document.getElementById('codePromo').value.trim().toUpperCase();
+  afficherToast(code === 'LUNE20' ? '✦ Code LUNE20 appliqué — 20% de réduction !' : 'Code promo invalide.');
+}
+function commander() {
+  if (panier.length === 0) { afficherToast('Votre panier est vide !'); return; }
+  afficherToast('✦ Commande confirmée — Merci pour votre confiance !');
+  panier = []; mettreAJourCompteur();
+  setTimeout(() => rendrePanier(), 600);
+}
+
+// ========== CONTACT ==========
+function envoyerFormulaire() {
+  const p = document.getElementById('cPrenom').value;
+  const e = document.getElementById('cEmail').value;
+  const m = document.getElementById('cMessage').value;
+  if (!p || !e || !m) { afficherToast('Veuillez remplir tous les champs obligatoires.'); return; }
+  document.getElementById('msgSucces').style.display = 'block';
+  afficherToast('✦ Message envoyé avec succès !');
+  ['cPrenom','cNom','cEmail','cMessage'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('cSujet').value = '';
+}
+
+// ========== NEWSLETTER ==========
+function inscrireNewsletter() {
+  const e = document.getElementById('emailNewsletter').value;
+  if (!e || !e.includes('@')) { afficherToast('Veuillez saisir un e-mail valide.'); return; }
+  afficherToast('✦ Bienvenue dans le Cercle Lunaire !');
+  document.getElementById('emailNewsletter').value = '';
+}
+
+// ========== INITIALISATION ==========
+creerEtoiles();
+rendreProduits('tous');
+</script>
+</body>
+</html>
